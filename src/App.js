@@ -193,8 +193,34 @@ function parseJavaToString(input) {
     return value
   }
 
+  function isTimeString(str) {
+    if (typeof str !== 'string') return false
+    const timeRegex = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2} \d{2}:\d{2}:\d{2} [A-Z]{3} \d{4}$/
+    return timeRegex.test(str)
+  }
+
+  function convertTimeStringsToTimestamp(obj) {
+    if (typeof obj !== 'object' || obj === null) {
+      if (isTimeString(obj)) {
+        return new Date(obj).getTime()
+      }
+      return obj
+    }
+    if (Array.isArray(obj)) {
+      return obj.map(item => convertTimeStringsToTimestamp(item))
+    }
+    const result = {}
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        result[key] = convertTimeStringsToTimestamp(obj[key])
+      }
+    }
+    return result
+  }
+
   const result = parseValue()
-  return JSON.stringify(result, null, 2)
+  const converted = convertTimeStringsToTimestamp(result)
+  return JSON.stringify(converted, null, 2)
 }
 
 export default function App () {
