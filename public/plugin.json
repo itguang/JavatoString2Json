@@ -1,0 +1,19 @@
+{
+  "main": "index.html",
+  "logo": "logo.svg",
+  "preload": "preload.js",
+  "features": [
+    {
+      "code": "javaToJson",
+      "explain": "将 Java 对象的 toString 字符串转换为 JSON 格式",
+      "cmds": [
+        {
+          "type": "text",
+          "label": "Java转JSON",
+          "regex": "",
+          "matchType": "fuzzy"
+        }
+      ]
+    }
+  ]
+}
