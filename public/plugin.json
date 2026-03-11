@@ -1,19 +1,35 @@
 {
-  "main": "index.html",
-  "logo": "logo.svg",
-  "preload": "preload.js",
-  "features": [
-    {
-      "code": "javaToJson",
-      "explain": "将 Java 对象的 toString 字符串转换为 JSON 格式",
-      "cmds": [
+    "main": "index.html",
+    "logo": "logo.png",
+    "preload": "preload.js",
+    "features": [
         {
-          "type": "text",
-          "label": "Java转JSON",
-          "regex": "",
-          "matchType": "fuzzy"
+            "code": "test-text",
+            "explain": "Java转JSON",
+            "cmds": [
+                "Java转JSON",
+                "json",
+                "tostring"
+            ]
+        },
+        {
+            "code": "javaToJson",
+            "explain": "将 Java 对象的 toString 字符串转换为 JSON 格式",
+            "cmds": [
+                {
+                    "type": "text",
+                    "label": "Java转JSON",
+                    "regex": "",
+                    "matchType": "fuzzy"
+                },
+                {
+                    "type": "regex",
+                    "label": "Java转JSON",
+                    "match": "/^\\s*\\[.+\\]\\s*$/",
+                    "minLength": 6,
+                    "maxLength": 100000
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }
