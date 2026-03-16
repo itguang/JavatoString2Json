@@ -108,11 +108,15 @@ function parseJavaToString(input) {
         pos++
       }
 
-      // ClassName@hashcode
+      // ClassName@hashcode（保留完整字符串）
       if (pos < str.length && str[pos] === '@') {
+        let full = name + '@'
         pos++
-        while (pos < str.length && /[a-zA-Z0-9]/.test(str[pos])) pos++
-        return name
+        while (pos < str.length && /[a-zA-Z0-9]/.test(str[pos])) {
+          full += str[pos]
+          pos++
+        }
+        return full
       }
 
       // ClassName( 或 ClassName{
@@ -143,7 +147,18 @@ function parseJavaToString(input) {
       if (!key || pos >= str.length || str[pos] !== '=') break
 
       pos++ // skip =
-      result[key] = parseValue()
+      const value = parseValue()
+
+      // 处理 super= 字段（Java 继承时 toString 自动生成的，应去掉）
+      if (key === 'super') {
+        // 值为嵌套对象时，将其字段展平合并到当前对象
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          Object.assign(result, value)
+        }
+        // 值为字符串（如 ClassName@hashcode）时，直接丢弃
+      } else {
+        result[key] = value
+      }
 
       skipWhitespace()
       if (pos < str.length && str[pos] === ',') pos++
