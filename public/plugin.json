@@ -28,6 +28,13 @@
                     "match": "/^\\s*\\[.+\\]\\s*$/",
                     "minLength": 6,
                     "maxLength": 100000
+                },
+                {
+                    "type": "regex",
+                    "label": "Java转JSON",
+                    "match": "/^BizResponse[({]/",
+                    "minLength": 12,
+                    "maxLength": 100000
                 }
             ]
         }
