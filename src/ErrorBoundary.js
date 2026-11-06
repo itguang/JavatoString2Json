@@ -1,7 +1,4 @@
 import React from 'react'
-import Alert from '@mui/material/Alert'
-import AlertTitle from '@mui/material/AlertTitle'
-import Button from '@mui/material/Button'
 
 const GLOBAL_ERROR_ID = 'global-error-' + Date.now()
 
@@ -98,10 +95,11 @@ export default class ErrorBoundary extends React.Component {
     if (this.state.error) {
       return (
         <div className='render-error-alert'>
-          <Alert variant='filled' severity='error' action={<Button onClick={this.handleCopyError} color='inherit'>复制</Button>}>
-            <AlertTitle>React 渲染错误</AlertTitle>
-            <pre>{this.state.error.stack}</pre>
-          </Alert>
+          <div className='render-error-header'>
+            <strong>React 渲染错误</strong>
+            <button type='button' className='global-error-btn' onClick={this.handleCopyError}>复制</button>
+          </div>
+          <pre>{this.state.error.stack}</pre>
         </div>
       )
     }

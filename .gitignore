@@ -31,3 +31,12 @@ build/
 .vscode/
 
 .flattened-pom.xml
+
+### Node ###
+node_modules/
+
+### macOS ###
+.DS_Store
+
+### Fast Request ###
+.fastRequest/

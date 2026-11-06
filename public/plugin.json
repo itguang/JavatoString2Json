@@ -2,6 +2,9 @@
     "main": "index.html",
     "logo": "logo.png",
     "preload": "preload.js",
+    "pluginSetting": {
+        "height": 600
+    },
     "features": [
         {
             "code": "test-text",
@@ -17,24 +20,24 @@
             "explain": "将 Java 对象的 toString 字符串转换为 JSON 格式",
             "cmds": [
                 {
-                    "type": "text",
+                    "type": "over",
                     "label": "Java转JSON",
-                    "regex": "",
-                    "matchType": "fuzzy"
+                    "minLength": 6,
+                    "maxLength": 5000000
                 },
                 {
                     "type": "regex",
                     "label": "Java转JSON",
                     "match": "/^\\s*\\[.+\\]\\s*$/",
                     "minLength": 6,
-                    "maxLength": 100000
+                    "maxLength": 5000000
                 },
                 {
                     "type": "regex",
                     "label": "Java转JSON",
                     "match": "/^BizResponse[({]/",
                     "minLength": 12,
-                    "maxLength": 100000
+                    "maxLength": 5000000
                 }
             ]
         }

@@ -40,10 +40,13 @@ module.exports = [
     },
     output: {
       path: outputPath,
-      filename: '[name].js'
+      filename: '[name].js',
+      chunkFilename: '[name].js',
+      // 插件以 file:// 加载，Worker 等异步 chunk 需要按相对路径解析
+      publicPath: './'
     },
     plugins: [
-      new CopyWebpackPlugin({ patterns: [{ from: 'public', to: '.' }] })
+      new CopyWebpackPlugin({ patterns: [{ from: 'public', to: '.', globOptions: { ignore: ['**/.DS_Store'] } }] })
     ],
     performance: {
       hints: false

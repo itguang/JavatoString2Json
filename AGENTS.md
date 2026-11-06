@@ -15,27 +15,30 @@ npm run dev              # Watch mode development build (webpack -w --mode devel
 npm run build            # Production build (webpack --mode production)
 ```
 
-Output goes to `dist/`. No test framework or linter is configured.
+Output goes to `dist/`. `npm test` runs parser unit tests (`test/*.test.mjs`) with Node's built-in `node:test`; no linter is configured.
 
 ## Architecture
 
 **Webpack dual-entry build** (`webpack.config.js`):
-
 - `electron-preload` target: compiles `bridge/preload.js` → `dist/preload.js` (Node.js/Electron APIs)
-- `web` target: compiles `src/index.js` → `dist/index.js` (React UI), copies `public/` to `dist/`
+- `web` target: compiles `src/index.js` → `dist/index.js` (React UI) and the parser Web Worker → `dist/parser.js`, copies `public/` to `dist/`. `publicPath: './'` so the worker resolves under `file://`
 
 **Key files:**
+- `public/plugin.json` — uTools plugin manifest (keyword feature `test-text`; `javaToJson` matches selected text via `over`/`regex` cmds)
+- `src/App.js` — Layout (split panes + status bar) and uTools wiring (`onPluginEnter`, clipboard auto-read, shortcuts)
+- `src/parser/parseJavaToString.js` — Pure parser, no DOM/React; returns `{ value, warnings }`
+- `src/parser/convertToJson.js` / `parser.worker.js` — parse + `JSON.stringify` in a Web Worker
+- `src/parser/useJsonConverter.js` — Hook that drives the worker: drops stale results, restarts the worker on new input / 10s timeout, falls back to main thread if workers are unavailable
+- `src/components/CodeEditor.js` — CodeMirror 6 wrapper (input: debounced editable text; output: read-only JSON with folding/search)
+- `src/platform.js` — Guards every `window.utools` call so `dist/index.html` also runs in a plain browser
+- `src/index.less` — Design tokens as CSS variables (light/dark via `prefers-color-scheme`); CodeMirror theme references them
+- `bridge/preload.js` — Exposes `window.services.readClipboardText`
 
-- `public/plugin.json` — uTools plugin manifest (feature code: `javaToJson`, entry: `index.html`, preload: `preload.js`)
-- `src/App.js` — Contains both the UI (React + MUI) and the core `parseJavaToString()` parser function
-- `src/ErrorBoundary.js` — Global error boundary with toast-style error display
-- `bridge/preload.js` — Electron preload script (currently stub with usage comments)
-
-**Core parser** (`parseJavaToString` in `src/App.js`):
-
-- Parses `ClassName{key=value, ...}` format recursively (nested objects, arrays, strings, primitives)
-- Handles `ClassName@hashcode` format
-- Uses character-by-character parsing with bracket/brace depth tracking
+**Core parser** (`src/parser/parseJavaToString.js`):
+- Parses Lombok `ClassName(k=v)`, IDE `ClassName{k=v}`, `Map` `{k=v}`, lists, bare `k=v, ...` lists, `ClassName@hash`
+- Index-based scanning; every loop iteration consumes input, so malformed brackets produce warnings instead of hanging
+- In field lists a comma only splits when followed by `key=`, so values like `remark=a, b` stay intact
+- Java `Date.toString()` → timestamp; `CST` is mapped to +08:00 (JS would treat it as US Central)
 
 ## uTools Plugin Conventions
 
@@ -46,7 +49,7 @@ Output goes to `dist/`. No test framework or linter is configured.
 
 ## Tech Stack
 
-React 19, MUI 7, Webpack 5, Babel (targets Chrome 108 / Electron 22), Less for styles
+React 19, CodeMirror 6, Webpack 5, Babel (targets Chrome 108 / Electron 22), Less with CSS variables (no UI component library)
 
 ---
 
